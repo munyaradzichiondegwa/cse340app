@@ -420,3 +420,509 @@ figcaption {
       font-size: 1em;
   }
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vehicle-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .vehicle-card img {
+    height: 200px;
+  }
+  
+  .vehicle-info {
+    padding: 1.25rem;
+  }
+  
+  .vehicle-info h3 {
+    font-size: 1.1rem;
+  }
+  
+  .vehicle-info .price {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+  
+  .vehicle-card {
+    border-radius: 12px;
+  }
+  
+  .vehicle-card img {
+    height: 180px;
+  }
+  
+  .vehicle-info {
+    padding: 1rem;
+  }
+}
+
+/* Enhanced Card Styles */
+.vehicle-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.vehicle-card:hover::before {
+  opacity: 1;
+}
+
+/* Loading State for Images */
+.vehicle-card img[src=""] {
+  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* Alternative Dark Theme (uncomment to use) */
+
+.vehicle-card {
+  background: #2c3e50;
+  border-color: #34495e;
+}
+
+.vehicle-info h3 {
+  color: #ecf0f1;
+}
+
+.vehicle-info .price {
+  color: #2ecc71;
+}
+
+.vehicle-card:hover {
+  background: #34495e;
+}
+
+/* Grid Section Title */
+.inventory-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.inventory-section h2 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  position: relative;
+}
+
+.inventory-section h2::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  margin: 1rem auto;
+  border-radius: 2px;
+}
+
+/* No vehicles message styling */
+.vehicle-grid p {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #bdc3c7;
+}
+
+/* Animation for cards appearing */
+.vehicle-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation delay for multiple cards */
+.vehicle-card:nth-child(1) { animation-delay: 0.1s; }
+.vehicle-card:nth-child(2) { animation-delay: 0.2s; }
+.vehicle-card:nth-child(3) { animation-delay: 0.3s; }
+.vehicle-card:nth-child(4) { animation-delay: 0.4s; }
+.vehicle-card:nth-child(5) { animation-delay: 0.5s; }
+.vehicle-card:nth-child(6) { animation-delay: 0.6s; }
+
+
+
+
+/* Vehicle Detail Page Styles */
+.vehicle-detail-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* Certification Banner */
+.certification-banner {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.certification-banner::before {
+  content: '✓';
+  position: absolute;
+  right: 120px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #00b894;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.certification-banner p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.enterprise-certified {
+  color: #00b894;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: lowercase;
+}
+
+/* Main Content Layout */
+.vehicle-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+  padding: 30px;
+}
+
+/* Left Column - Image and Specs */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Vehicle Gallery */
+.vehicle-gallery {
+  position: relative;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.thumbnail-gallery {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.thumbnail:hover,
+.thumbnail.active {
+  border-color: #00b894;
+  transform: scale(1.05);
+}
+
+/* Vehicle Specs Grid */
+.vehicle-specs {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 8px;
+}
+
+.specs-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.spec-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spec-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.vehicle-history {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+}
+
+.vehicle-history p {
+  font-size: 14px;
+  color: #856404;
+  margin: 0;
+}
+
+/* Right Column - Header and Actions */
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.vehicle-header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+/* Price Section */
+.price-section {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+}
+
+.price-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.price {
+  font-size: 36px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 10px 0;
+}
+
+.mileage-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+  padding: 15px 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.mileage-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.mileage-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.disclaimer {
+  font-size: 11px;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+.estimate-link {
+  display: inline-block;
+  color: #00b894;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  display: block;
+  text-align: center;
+  padding: 15px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #00b894;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #00a085;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,184,148,0.3);
+}
+
+.btn-secondary {
+  background: #74b9ff;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #0984e3;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(116,185,255,0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #74b9ff;
+  border: 2px solid #74b9ff;
+}
+
+.btn-outline:hover {
+  background: #74b9ff;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Contact Info */
+.dealer-info {
+  background: #2d3748;
+  color: white;
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.contact-item {
+  margin-bottom: 20px;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-label {
+  font-size: 14px;
+  color: #cbd5e0;
+  margin-bottom: 5px;
+}
+
+.contact-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #00b894;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vehicle-content {
+      grid-template-columns: 1fr;
+      padding: 20px;
+      gap: 20px;
+  }
+
+  .vehicle-header h1 {
+      font-size: 24px;
+  }
+
+  .price {
+      font-size: 28px;
+  }
+
+  .specs-grid {
+      grid-template-columns: 1fr;
+  }
+
+  .main-image {
+      height: 300px;
+  }
+
+  .certification-banner {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+  }
+
+  .certification-banner::before {
+      position: static;
+      transform: none;
+      margin: 10px auto;
+  }
+}
