@@ -206,14 +206,17 @@ body {
    Hero Section
 =================== */
 #hero {
+  position: relative;
   background-image: url("/images/vehicles/delorean.jpg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  padding: 1em 0;
+  height: 50vh; 
 }
 
 #hero ul {
@@ -388,23 +391,9 @@ figcaption {
   }
 }
 
-#hero {
-  position: relative;
-  background-image: url("/images/vehicles/delorean.jpg");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50vh; /* or any height that works for your image */
-}
-
 #hero ul {
   position: absolute;
-  top: 10%; /* Adjust as needed */
+  top: 10%; 
   left: 5%;
   padding-left: 0;
   max-width: 200px;
@@ -414,9 +403,9 @@ figcaption {
 }
 
 #hero {
-  background-size: cover; /* or 'contain' if you prefer */
+  background-size: cover; 
   background-position: center;
-  height: 60vh; /* adjust as needed */
+  height: 60vh; 
 }
 
 @media (max-width: 767px) {

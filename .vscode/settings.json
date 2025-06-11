@@ -1,0 +1,28 @@
+{
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "Render.com",
+            "connectString": "dpg-d12e45k9c44c7387oet0-a.oregon-postgres.render.com"
+        },
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "Render.com",
+            "connectString": "postgresql://munyac_cse340:tIQs7INjWZV3bJ49Zb9IZ7sYYWoB7Qdf@dpg-d12e45k9c44c7387oet0-a.oregon-postgres.render.com/munyac_cse340"
+        }
+    ]
+}
