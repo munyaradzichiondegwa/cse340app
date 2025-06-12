@@ -81,12 +81,16 @@ app.use(async (err, req, res, next) => {
  *************************/
 // server.js
 
-const port = 5500;
-const host = 'localhost'; // Define the host
+// server.js
 
-// ... your other app.use() and route configurations ...
+// 1. Get the port from the environment variable provided by Render.
+//    If it's not available (i.e., we are running locally), default to 5500.
+const PORT = process.env.PORT || 5500;
 
-app.listen(port, () => {
-  // Change the console.log to include the full URL
-  console.log(`App listening on http://${host}:${port}`);
+// 2. Do NOT specify a host. Express will default to 0.0.0.0,
+//    which is exactly what is needed for a production environment.
+app.listen(PORT, () => {
+  // 3. The log message can still be helpful, but it's more for your local environment.
+  //    In production, the external URL will be different anyway.
+  console.log(`Server started and listening on port ${PORT}`);
 });
