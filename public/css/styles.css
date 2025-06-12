@@ -926,3 +926,104 @@ figcaption {
       margin: 10px auto;
   }
 }
+
+.detail-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.detail-container img {
+  max-width: 100%;
+  width: 400px;
+  flex: 1;
+}
+
+.vehicle-info {
+  flex: 2;
+  min-width: 300px;
+}
+
+/* ===================
+   Vehicle Detail View
+=================== */
+.vehicle-detail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+.vehicle-detail img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.vehicle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.vehicle-info h2 {
+  margin: 0;
+  color: var(--primary-text);
+  font-size: 1.6em;
+}
+
+.vehicle-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.8rem;
+}
+
+.vehicle-specs div {
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.vehicle-price {
+  font-size: 1.8em;
+  color: var(--main-accent);
+  font-weight: bold;
+}
+
+.vehicle-cta {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.vehicle-cta a, .vehicle-cta button {
+  background-color: var(--main-accent);
+  color: white;
+  padding: 0.8em 1.2em;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.vehicle-cta a:hover, .vehicle-cta button:hover {
+  background-color: #0190af;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .vehicle-detail {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .vehicle-info {
+    padding: 0 1rem;
+  }
+}

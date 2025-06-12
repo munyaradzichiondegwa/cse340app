@@ -27,10 +27,6 @@ Util.getNav = async function (req, res, next) {
 module.exports = Util
 
 
-
-
-
-
 /* **************************************
 * Build the classification view HTML
 * ************************************ */
@@ -62,4 +58,27 @@ Util.buildClassificationGrid = async function(data){
     grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
   }
   return grid
+}
+
+
+
+/* ****************************************
+ * Middleware For Handling Errors
+ * Wrap other function in this for 
+ * General Error Handling
+ **************************************** */
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+
+function buildDetailView(vehicle) {
+  return `
+    <div class="detail-container">
+      <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+      <div class="vehicle-info">
+        <h1>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h1>
+        <h2>Price: $${Number(vehicle.inv_price).toLocaleString()}</h2>
+        <p><strong>Mileage:</strong> ${Number(vehicle.inv_miles).toLocaleString()} miles</p>
+        <p>${vehicle.inv_description}</p>
+        <p><strong>Color:</strong> ${vehicle.inv_color}</p>
+      </div>
+    </div>`;
 }
