@@ -25,6 +25,18 @@ app.set("layout", "./layouts/layout") // not at views root
 app.use(express.static("public"))
 
 /* ***********************
+ * Inject nav into all views
+ *************************/
+app.use(async (req, res, next) => {
+  try {
+    res.locals.nav = await utilities.getNav()
+    next()
+  } catch (err) {
+    next(err)
+  }
+})
+
+/* ***********************
  * Routes
  *************************/
 app.use(staticRoutes)
@@ -67,9 +79,14 @@ app.use(async (err, req, res, next) => {
 /* ***********************
  * Server Info
  *************************/
-const port = process.env.PORT || 3000
-const host = process.env.HOST || "localhost"
+// server.js
+
+const port = 5500;
+const host = 'localhost'; // Define the host
+
+// ... your other app.use() and route configurations ...
 
 app.listen(port, () => {
-  console.log(`App listening on http://${host}:${port}`)
-})
+  // Change the console.log to include the full URL
+  console.log(`App listening on http://${host}:${port}`);
+});
