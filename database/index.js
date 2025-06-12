@@ -1,7 +1,7 @@
-const { Pool } = require("pg")
-require("dotenv").config()
+const { Pool } = require("pg");
+require("dotenv").config();
 
-let pool
+let pool;
 
 if (process.env.NODE_ENV === "development") {
   pool = new Pool({
@@ -9,28 +9,27 @@ if (process.env.NODE_ENV === "development") {
     ssl: {
       rejectUnauthorized: false,
     },
-  })
-
-  // For development: log all queries
-  module.exports = {
-    query: async (text, params) => {
-      try {
-        const res = await pool.query(text, params)
-        console.log("executed query", { text })
-        return res
-      } catch (err) {
-        console.error("Query error", err)
-        throw err
-      }
-    },
-  }
+  });
 } else {
+  // Production configuration (for Render)
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
-      rejectUnauthorized: false, // Required for Render
+      rejectUnauthorized: false,  // Must be added for Render PostgreSQL
     },
-  })
-
-  module.exports = pool
+  });
 }
+
+// Unified export for all environments
+module.exports = {
+  async query(text, params) {
+    try {
+      const res = await pool.query(text, params);
+      console.log("executed query", { text });
+      return res;
+    } catch (error) {
+      console.error("error in query", { text });
+      throw error;
+    }
+  },
+};

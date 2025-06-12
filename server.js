@@ -17,6 +17,12 @@ const utilities = require("./utilities/")
 const errorHandler = require("./middleware/errorHandler")
 
 /* ***********************
+ * Log Environment Variables
+ *************************/
+console.log("Environment:", process.env.NODE_ENV)
+console.log("DB URL:", process.env.DATABASE_URL ? process.env.DATABASE_URL.split("@")[0] + "@..." : "Not defined")
+
+/* ***********************
  * Middleware & Layout Setup
  *************************/
 app.use(expressLayouts)
@@ -79,12 +85,12 @@ app.use(async (err, req, res, next) => {
 /* ***********************
  * Server Info
  *************************/
-const port = process.env.PORT;
-const host = process.env.HOST;
+const port = process.env.PORT || 5500
+const host = process.env.HOST || "localhost"
 
 /* ***********************
  * Log statement to confirm server operation
  *************************/
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`);
-});
+  console.log(`✔ App listening at http://${host}:${port}`)
+})
