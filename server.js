@@ -101,7 +101,7 @@ app.use(async (req, res, next) => {
  * Route Definitions
  *************************/
 app.use(staticRoutes);
-app.use("/inv", inventoryRoute);
+app.use("/inventory", inventoryRoute);
 app.use("/account", accountRoute);
 
 // Home Page

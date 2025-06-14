@@ -1,44 +1,37 @@
 const utilities = require("../utilities");
 const accountModel = require('../models/account-model');
 
-/* ****************************************
- *  Deliver login view
- * *************************************** */
+/* Deliver login view */
 async function buildLogin(req, res, next) {
   try {
-    let nav = await utilities.getNav();
+    const nav = await utilities.getNav();
     res.render("account/login", {
       title: "Login",
       nav,
-      message: req.flash('notice') || null, // pass flash message to view
+      message: req.flash('notice') || null,
+      errors: null
     });
   } catch (error) {
     next(error);
   }
 }
 
+
 /* ****************************************
- *  Deliver registration view
- * *************************************** */
+*  Deliver registration view
+* *************************************** */
 async function buildRegister(req, res, next) {
-  try {
-    let nav = await utilities.getNav();
-    res.render("account/register", {
-      title: "Register",
-      nav,
-      errors: null,
-      message: req.flash('notice') || null,  // pass flash message here too
-    });
-  } catch (error) {
-    next(error);
-  }
+  let nav = await utilities.getNav()
+  res.render("account/register", {
+    title: "Register",
+    nav,
+    errors: null,
+  })
 }
 
-/* ****************************************
- *  Process Registration
- * *************************************** */
+/* Process Registration */
 async function registerAccount(req, res) {
-  let nav = await utilities.getNav();
+  const nav = await utilities.getNav();
   const { account_firstname, account_lastname, account_email, account_password } = req.body;
 
   const regResult = await accountModel.registerAccount(
@@ -49,23 +42,21 @@ async function registerAccount(req, res) {
   );
 
   if (regResult) {
-    req.flash(
-      "notice",
-      `Congratulations, you're registered ${account_firstname}. Please log in.`
-    );
-    res.status(201).redirect('/account/login');  // redirect after post
+    req.flash("notice", `Congratulations, you're registered ${account_firstname}. Please log in.`);
+    res.status(201).redirect('/account/login');
   } else {
-    req.flash("notice", "Sorry, the registration failed.");
     res.status(501).render("account/register", {
-      title: "Registration",
+      title: "Register",
       nav,
+      message: "Sorry, the registration failed.",
       errors: null,
-      message: req.flash('notice') || null,
+      account_firstname,
+      account_lastname,
+      account_email
     });
   }
 }
 
-// Export all at once
 module.exports = {
   buildLogin,
   buildRegister,

@@ -1,16 +1,23 @@
-<%- include('../partials/header') %>
-    <%- include('../partials/nav') %>
+<main>
+    <h1>Add New Inventory Item</h1>
 
-        <main>
-            <h1>Add New Inventory Item</h1>
+    <% if (message) { %>
+        <div class="flash-message">
+            <%= message %>
+        </div>
+        <% } %>
 
-            <% if (message) { %>
-                <div class="flash-message">
-                    <%= message %>
-                </div>
+            <% if (errors && errors.length> 0) { %>
+                <ul class="error-messages">
+                    <% errors.forEach(error=> { %>
+                        <li>
+                            <%= error.msg %>
+                        </li>
+                        <% }) %>
+                </ul>
                 <% } %>
 
-                    <form action="/inv/add-inventory" method="post">
+                    <form action="/inv/add-inventory" method="post" novalidate>
 
                         <!-- Classification Dropdown -->
                         <label for="classificationList">Classification</label>
@@ -18,52 +25,47 @@
 
                             <!-- Make -->
                             <label for="inv_make">Make</label>
-                            <input type="text" id="inv_make" name="inv_make" required
-                                value="<%= typeof inv_make != 'undefined' ? inv_make : '' %>">
+                            <input type="text" id="inv_make" name="inv_make" required value="<%= inv_make %>" />
 
                             <!-- Model -->
                             <label for="inv_model">Model</label>
-                            <input type="text" id="inv_model" name="inv_model" required
-                                value="<%= typeof inv_model != 'undefined' ? inv_model : '' %>">
+                            <input type="text" id="inv_model" name="inv_model" required value="<%= inv_model %>" />
 
                             <!-- Year -->
                             <label for="inv_year">Year</label>
                             <input type="number" id="inv_year" name="inv_year" min="1900" max="2099" step="1" required
-                                value="<%= typeof inv_year != 'undefined' ? inv_year : '' %>">
+                                value="<%= inv_year %>" />
 
                             <!-- Description -->
                             <label for="inv_description">Description</label>
                             <textarea id="inv_description" name="inv_description"
-                                required><%= typeof inv_description != 'undefined' ? inv_description : '' %></textarea>
+                                required><%= inv_description %></textarea>
 
                             <!-- Image -->
                             <label for="inv_image">Image Path</label>
-                            <input type="text" id="inv_image" name="inv_image" required
-                                value="<%= typeof inv_image != 'undefined' ? inv_image : '/images/vehicles/no-image.png' %>">
+                            <input type="text" id="inv_image" name="inv_image" required value="<%= inv_image %>" />
 
                             <!-- Thumbnail -->
                             <label for="inv_thumbnail">Thumbnail Path</label>
                             <input type="text" id="inv_thumbnail" name="inv_thumbnail" required
-                                value="<%= typeof inv_thumbnail != 'undefined' ? inv_thumbnail : '/images/vehicles/no-image.png' %>">
+                                value="<%= inv_thumbnail %>" />
 
                             <!-- Price -->
                             <label for="inv_price">Price</label>
                             <input type="number" id="inv_price" name="inv_price" required step="0.01"
-                                value="<%= typeof inv_price != 'undefined' ? inv_price : '' %>">
+                                value="<%= inv_price %>" />
 
-                            <!-- Miles -->
+                            <!-- Mileage -->
                             <label for="inv_miles">Mileage</label>
-                            <input type="number" id="inv_miles" name="inv_miles" required
-                                value="<%= typeof inv_miles != 'undefined' ? inv_miles : '' %>">
+                            <input type="number" id="inv_miles" name="inv_miles" required value="<%= inv_miles %>" />
 
                             <!-- Color -->
                             <label for="inv_color">Color</label>
-                            <input type="text" id="inv_color" name="inv_color" required
-                                value="<%= typeof inv_color != 'undefined' ? inv_color : '' %>">
+                            <input type="text" id="inv_color" name="inv_color" required value="<%= inv_color %>" />
 
                             <!-- Submit Button -->
                             <button type="submit">Add Inventory Item</button>
-                    </form>
-        </main>
 
-        <%- include('../partials/footer') %>
+                    </form>
+</main>
+  

@@ -1,42 +1,38 @@
-// Require utilities and express-validator
 const utilities = require(".")
-const { body, validationResult } = require("express-validator")
-
-// Create validate object
+  const { body, validationResult } = require("express-validator")
 const validate = {}
-
+  
 /*  **********************************
- *  Registration Data Validation Rules
- * ********************************* */
-validate.registrationRules = () => {
+  *  Registration Data Validation Rules
+  * ********************************* */
+validate.registationRules = () => {
   return [
-    // First name is required and must be at least 1 character
+    // firstname is required and must be string
     body("account_firstname")
       .trim()
       .escape()
       .notEmpty()
       .isLength({ min: 1 })
-      .withMessage("Please provide a first name."),
+      .withMessage("Please provide a first name."), // on error this message is sent.
 
-    // Last name is required and must be at least 2 characters
+    // lastname is required and must be string
     body("account_lastname")
       .trim()
       .escape()
       .notEmpty()
       .isLength({ min: 2 })
-      .withMessage("Please provide a last name."),
+      .withMessage("Please provide a last name."), // on error this message is sent.
 
-    // Valid email is required and must be in proper format
+    // valid email is required and cannot already exist in the DB
     body("account_email")
-      .trim()
-      .escape()
-      .notEmpty()
-      .isEmail()
-      .normalizeEmail()
-      .withMessage("A valid email is required."),
+    .trim()
+    .escape()
+    .notEmpty()
+    .isEmail()
+    .normalizeEmail() // refer to validator.js docs
+    .withMessage("A valid email is required."),
 
-    // Password must be strong with at least:
-    // 12 characters, 1 uppercase, 1 number, 1 symbol
+    // password is required and must be strong password
     body("account_password")
       .trim()
       .notEmpty()
@@ -51,12 +47,16 @@ validate.registrationRules = () => {
   ]
 }
 
+
+
+
 /* ******************************
  * Check data and return errors or continue to registration
  * ***************************** */
 validate.checkRegData = async (req, res, next) => {
   const { account_firstname, account_lastname, account_email } = req.body
-  let errors = validationResult(req)
+  let errors = []
+  errors = validationResult(req)
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
     res.render("account/register", {
@@ -72,5 +72,4 @@ validate.checkRegData = async (req, res, next) => {
   next()
 }
 
-// Export validate object once
 module.exports = validate

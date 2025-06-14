@@ -25,8 +25,30 @@ Util.getNav = async function () {
   return list;
 };
 
+/* ****************************************
+ * Builds a dynamic classification <select> dropdown
+ **************************************** */
+Util.buildClassificationList = async function (selectedId = 0) {
+  try {
+    const data = await invModel.getClassifications();
+    let list = '<select name="classification_id" id="classificationList" required>';
+    list += '<option value="" disabled' + (!selectedId ? ' selected' : '') + '>Select Classification</option>';
+
+    data.rows.forEach(classification => {
+      const selected = classification.classification_id === Number(selectedId) ? ' selected' : '';
+      list += `<option value="${classification.classification_id}"${selected}>${classification.classification_name}</option>`;
+    });
+
+    list += '</select>';
+    return list;
+  } catch (error) {
+    console.error("Error building classification list:", error);
+    return '<select name="classification_id" id="classificationList" required><option value="">No classifications available</option></select>';
+  }
+};
+
 /* **************************************
- * Build the classification view HTML
+ * Build the classification grid HTML
  ************************************** */
 Util.buildClassificationGrid = async function (data) {
   let grid = '';
@@ -58,15 +80,12 @@ Util.buildClassificationGrid = async function (data) {
 
 /* ****************************************
  * Middleware For Handling Errors
- * Wrap other function in this for 
- * General Error Handling
  **************************************** */
 Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-/* **************************************
+/* ****************************************
  * Build Vehicle Detail HTML
- * Takes vehicle object and returns HTML string
- ************************************** */
+ **************************************** */
 Util.buildVehicleDetailHTML = function (data) {
   if (!data) return '<p>Vehicle not found</p>';
 

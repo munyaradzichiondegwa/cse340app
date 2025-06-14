@@ -1,39 +1,36 @@
+<h1>Register</h1>
 
+<% if (errors && errors.array().length> 0) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error=> { %>
+            <li>
+                <%= error.msg %>
+            </li>
+            <% }) %>
+    </ul>
+    <% } %>
 
-    <h1>
-        <%= title %>
-    </h1>
+        <form action="/account/register" method="POST" novalidate>
+            <label for="accountFirstName">First Name:</label><br />
+            <input type="text" id="accountFirstName" name="account_firstname" required
+                value="<%= typeof account_firstname !== 'undefined' ? account_firstname : '' %>" /><br /><br />
 
-    <% if (message) { %>
-        <p class="flash-message">
-            <%= message %>
-        </p>
-        <% } %>
+            <label for="accountLastName">Last Name:</label><br />
+            <input type="text" id="accountLastName" name="account_lastname" required
+                value="<%= typeof account_lastname !== 'undefined' ? account_lastname : '' %>" /><br /><br />
 
-            <% if (errors) { %>
-                <ul class="errors">
-                    <% errors.forEach(function(error) { %>
-                        <li>
-                            <%= error.msg %>
-                        </li>
-                        <% }); %>
-                </ul>
-                <% } %>
+            <label for="accountEmail">Email:</label><br />
+            <input type="email" id="accountEmail" name="account_email" required
+                placeholder="Enter a valid email address"
+                value="<%= typeof account_email !== 'undefined' ? account_email : '' %>" /><br /><br />
 
-                    <form action="/account/register" method="post">
-                        <label for="account_firstname">First Name:</label>
-                        <input type="text" id="account_firstname" name="account_firstname" required>
+            <label for="accountPassword">Password:</label><br />
+            <div class="password-requirements">
+                Passwords must be at least 12 characters and contain at least 1 number,
+                1 capital letter, and 1 special character
+            </div>
+            <input type="password" id="accountPassword" name="account_password" required
+                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" /><br /><br />
 
-                        <label for="account_lastname">Last Name:</label>
-                        <input type="text" id="account_lastname" name="account_lastname" required>
-
-                        <label for="account_email">Email:</label>
-                        <input type="email" id="account_email" name="account_email" required>
-
-                        <label for="account_password">Password:</label>
-                        <input type="password" id="account_password" name="account_password" required minlength="12"
-                            pattern="(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])"
-                            title="Password must be at least 12 characters, contain an uppercase letter, a number, and a special character.">
-
-                        <button type="submit">Register</button>
-                    </form>
+            <button type="submit">Register</button>
+        </form>
