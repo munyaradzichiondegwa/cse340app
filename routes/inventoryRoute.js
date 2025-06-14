@@ -1,11 +1,21 @@
-const express = require("express");
-const router = new express.Router();
-const invController = require("../controllers/invController");
+const express = require('express');
+const router = express.Router();
 
-// Route to build inventory by classification view
-router.get("/type/:classificationId", invController.buildByClassificationId);
+// Import the inventoryController with the variable name 'inventoryController'
+const inventoryController = require('../controllers/inventoryController');
 
-// Route to build inventory detail view
-router.get("/detail/:inv_id", invController.buildByInventoryId);
+// Import utility functions
+const utility = require('../utilities/');
+
+// Route to build inventory by classification ID (example route)
+
+router.get('/type/:classificationId', utility.handleErrors(inventoryController.buildByClassificationId));
+
+// Route for vehicle detail, using the showVehicleDetail method
+router.get('/detail/:invId', utility.handleErrors(inventoryController.showVehicleDetail));
+
+router.get('/throw-error', (req, res, next) => {
+    throw new Error("Intentional server error for testing");
+  });
 
 module.exports = router;

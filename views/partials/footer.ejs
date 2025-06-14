@@ -1,7 +1,5 @@
-<% const d=new Date(); let year=d.getFullYear() %>
-    <footer>
-        <p class="copyright">&copy; <%= year %>, CSE 340 App</p>
-
-        <!-- This is the link that will trigger the intentional error -->
-        <p><a href="/inv/broken" title="Click to trigger a server error">Trigger Intentional Error</a></p>
-    </footer>
+<footer id="site-footer">
+    <p>&copy; <%= new Date().getFullYear() %>, CSE 340 App</p>
+    <!-- in views/partials/footer.ejs -->
+    <a href="/inv/throw-error" class="error-link">Trigger 500 Error</a>
+</footer>

@@ -1,0 +1,76 @@
+// Require utilities and express-validator
+const utilities = require(".")
+const { body, validationResult } = require("express-validator")
+
+// Create validate object
+const validate = {}
+
+/*  **********************************
+ *  Registration Data Validation Rules
+ * ********************************* */
+validate.registrationRules = () => {
+  return [
+    // First name is required and must be at least 1 character
+    body("account_firstname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isLength({ min: 1 })
+      .withMessage("Please provide a first name."),
+
+    // Last name is required and must be at least 2 characters
+    body("account_lastname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isLength({ min: 2 })
+      .withMessage("Please provide a last name."),
+
+    // Valid email is required and must be in proper format
+    body("account_email")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("A valid email is required."),
+
+    // Password must be strong with at least:
+    // 12 characters, 1 uppercase, 1 number, 1 symbol
+    body("account_password")
+      .trim()
+      .notEmpty()
+      .isStrongPassword({
+        minLength: 12,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage("Password does not meet requirements."),
+  ]
+}
+
+/* ******************************
+ * Check data and return errors or continue to registration
+ * ***************************** */
+validate.checkRegData = async (req, res, next) => {
+  const { account_firstname, account_lastname, account_email } = req.body
+  let errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    res.render("account/register", {
+      errors,
+      title: "Registration",
+      nav,
+      account_firstname,
+      account_lastname,
+      account_email,
+    })
+    return
+  }
+  next()
+}
+
+// Export validate object once
+module.exports = validate

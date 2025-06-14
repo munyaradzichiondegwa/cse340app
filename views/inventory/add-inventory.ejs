@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head') %>
+        <title>Add New Vehicle</title>
+</head>
+
+<body>
+    <%- nav %>
+
+        <main>
+            <% if (message) { %>
+                <div class="flash-message">
+                    <%= message %>
+                </div>
+                <% } %>
+
+                    <% if (errors && errors.length> 0) { %>
+                        <div class="error-message">
+                            <ul>
+                                <% errors.forEach(error=> { %>
+                                    <li>
+                                        <%= error.msg %>
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                        </div>
+                        <% } %>
+
+                            <form action="/inv/add-inventory" method="POST">
+                                <label for="classification_id">Classification:</label>
+                                <select name="classification_id" id="classification_id" required>
+                                    <%- classificationList %>
+                                </select>
+
+                                <label for="inv_make">Make:</label>
+                                <input type="text" id="inv_make" name="inv_make" required
+                                    value="<%= stickyData?.inv_make || '' %>" />
+
+                                <label for="inv_model">Model:</label>
+                                <input type="text" id="inv_model" name="inv_model" required
+                                    value="<%= stickyData?.inv_model || '' %>" />
+
+                                <label for="inv_year">Year:</label>
+                                <input type="number" id="inv_year" name="inv_year" required
+                                    value="<%= stickyData?.inv_year || '' %>" />
+
+                                <label for="inv_description">Description:</label>
+                                <textarea id="inv_description" name="inv_description"
+                                    required><%= stickyData?.inv_description || '' %></textarea>
+
+                                <label for="inv_price">Price:</label>
+                                <input type="number" step="0.01" id="inv_price" name="inv_price" required
+                                    value="<%= stickyData?.inv_price || '' %>" />
+
+                                <label for="inv_miles">Miles:</label>
+                                <input type="number" id="inv_miles" name="inv_miles" required
+                                    value="<%= stickyData?.inv_miles || '' %>" />
+
+                                <label for="inv_color">Color:</label>
+                                <input type="text" id="inv_color" name="inv_color" required
+                                    value="<%= stickyData?.inv_color || '' %>" />
+
+                                <label for="inv_image">Image URL:</label>
+                                <input type="text" id="inv_image" name="inv_image"
+                                    value="<%= stickyData?.inv_image || '/images/no-image-available.png' %>" />
+
+                                <label for="inv_thumbnail">Thumbnail URL:</label>
+                                <input type="text" id="inv_thumbnail" name="inv_thumbnail"
+                                    value="<%= stickyData?.inv_thumbnail || '/images/no-image-available.png' %>" />
+
+                                <button type="submit">Add Vehicle</button>
+                            </form>
+
+                            <p><a href="/inv/">Back to Management View</a></p>
+        </main>
+
+        <%- include('../partials/footer') %>
+</body>
+
+</html>

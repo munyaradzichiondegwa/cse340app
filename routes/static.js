@@ -1,22 +1,12 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const invController = require('../controllers/inventoryController');
+const utilities = require('../utilities');
 
-const baseController = require("../controllers/baseController");
-const utilities = require("../utilities/");
-const invController = require("../controllers/invController");
+router.get("/custom", utilities.handleErrors(invController.buildCustom));
+router.get("/sedan", utilities.handleErrors(invController.buildSedan));
+router.get("/suv", utilities.handleErrors(invController.buildSUV));
+router.get("/truck", utilities.handleErrors(invController.buildTruck));
 
-// Static Routes
-// Serve static assets
-router.use(express.static("public"));
-router.use("/css", express.static(__dirname + "/../public/css"));
-router.use("/js", express.static(__dirname + "/../public/js"));
-router.use("/images", express.static(__dirname + "/../public/images"));
-
-// Route to homepage
-router.get("/", utilities.handleErrors(baseController.buildHome));
-
-// Route to classification
-router.get("/classify/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
 
 module.exports = router;
-

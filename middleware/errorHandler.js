@@ -1,29 +1,16 @@
 // middleware/errorHandler.js
+exports.notFound = (req, res, next) => {
+  res.status(404).render('errors/error', {
+    title: '404 - Not Found',
+    message: 'Sorry, we couldn\'t find the page you requested.',
+    nav: ''
+  });
+};
 
-function handleErrors(fn) {
-    return function (req, res, next) {
-      Promise.resolve(fn(req, res, next)).catch(next)
-    }
-  }
-  
-  function notFound(req, res, next) {
-    res.status(404).render("errors/404", {
-      title: "Page Not Found",
-      message: "Sorry, we can't find that page.",
-    })
-  }
-  
-  function internalServerError(err, req, res, next) {
-    console.error(err.stack)
-    res.status(500).render("errors/500", {
-      title: "Server Error",
-      message: "Something went wrong on our end.",
-    })
-  }
-  
-  module.exports = {
-    handleErrors,
-    notFound,
-    internalServerError,
-  }
-  
+exports.internalServerError = (err, req, res, next) => {
+  res.status(500).render('errors/error', {
+    title: '500 - Server Error',
+    message: 'An unexpected error occurred.',
+    nav: ''
+  });
+};
