@@ -1,25 +1,33 @@
 const express = require('express');
 const router = express.Router();
+
 const inventoryController = require('../controllers/inventoryController');
-const { validateClassification } = require('../middleware/validationMiddleware');
+const { validateClassification, validateInventory } = require('../middleware/validationMiddleware');
+const utilities = require("../utilities/");
 
-// Existing routes
-router.get('/', inventoryController.showManagement);
-router.get('/add-classification', inventoryController.showAddClassificationForm);
-router.post('/add-classification', validateClassification, inventoryController.addClassification);
-router.get('/add-inventory', inventoryController.showAddInventoryForm);
-router.post('/add-inventory', validateInventory, inventoryController.addInventory);
+// Inventory Management main page
+router.get('/', utilities.handleErrors(inventoryController.buildManagement));
 
-// Vehicle detail route
-router.get('/detail/:invId', inventoryController.buildByInventoryId);
+// Add Classification form display
+router.get('/add-classification', utilities.handleErrors(inventoryController.buildAddClassification));
 
-router.get('/detail/:invId', inventoryController.showVehicleDetail);
+// Add Classification form submission
+router.post('/add-classification', validateClassification, utilities.handleErrors(inventoryController.addClassification));
 
+// Add Inventory form display
+router.get('/add-inventory', utilities.handleErrors(inventoryController.buildAddInventory));
 
+// Add Inventory form submission
+router.post('/add-inventory', validateInventory, utilities.handleErrors(inventoryController.addInventory));
 
-// New route for intentional error testing (to be added later)
+// Inventory by classification view
+router.get('/classification/:classificationId', utilities.handleErrors(inventoryController.buildByClassificationId));
+
+// Vehicle detail page
+router.get('/detail/:invId', utilities.handleErrors(inventoryController.showVehicleDetail));
+
+// Route to intentionally throw an error for testing
 router.get('/throw-error', (req, res, next) => {
-  // Throw an error to test error handling
   throw new Error("Intentional server error for testing");
 });
 

@@ -18,7 +18,7 @@ const pgSession = require("connect-pg-simple")(session);
 
 // Routes
 const staticRoutes = require("./routes/static");
-const inventoryRoute = require("./routes/inventoryRoute");
+const inventoryRoute = require("./routes/inventory");
 const accountRoute = require("./routes/accountRoute");
 
 // Controllers
@@ -45,7 +45,7 @@ const port = process.env.PORT || 5500;
 const host = process.env.HOST || "localhost";
 
 /* ***********************
- * View Engine & Static
+ * View Engine & Static Files
  *************************/
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
@@ -86,7 +86,7 @@ app.use((req, res, next) => {
 });
 
 /* ***********************
- * Inject Nav into All Views
+ * Inject Navigation into All Views
  *************************/
 app.use(async (req, res, next) => {
   try {
@@ -100,7 +100,7 @@ app.use(async (req, res, next) => {
 /* ***********************
  * Route Definitions
  *************************/
-app.use(staticRoutes);
+app.use(staticRoutes); // no prefix, handles static pages
 app.use("/inventory", inventoryRoute);
 app.use("/account", accountRoute);
 

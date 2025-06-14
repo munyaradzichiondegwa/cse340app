@@ -1,38 +1,36 @@
 
-
-    <main>
-        <div class="vehicle-detail">
-            <div class="vehicle-image">
-                <img src="<%= vehicle.inv_image %>" alt="..." />
-            </div>
-
-            <div class="vehicle-info">
-                <p><strong>Make:</strong>
-                    <%= vehicle.inv_make %>
-                </p>
-                <p><strong>Model:</strong>
-                    <%= vehicle.inv_model %>
-                </p>
-                <p><strong>Year:</strong>
-                    <%= vehicle.inv_year %>
-                </p>
-                <p><strong>Price:</strong>
-                    <%= vehicle.inv_price_formatted %>
-                </p>
-                <p><strong>Miles:</strong>
-                    <%= vehicle.inv_miles_formatted %>
-                </p>
-                <p><strong>Color:</strong>
-                    <%= vehicle.inv_color %>
-                </p>
-                <p><strong>Classification:</strong>
-                    <%= vehicle.classification_name %>
-                </p>
-                <p><strong>Description:</strong>
-                    <%= vehicle.inv_description %>
-                </p>
-            </div>
+<main>
+    <div class="vehicle-detail">
+        <div class="vehicle-image">
+            <img src="<%= vehicle.inv_image && vehicle.inv_image !== '/images/valid.png' ? vehicle.inv_image : '/images/vehicles/no-image.png' %>"
+                alt="Vehicle Image" />
         </div>
-    </main>
 
-   
+        <div class="vehicle-info">
+            <p><strong>Make:</strong>
+                <%= vehicle.inv_make %>
+            </p>
+            <p><strong>Model:</strong>
+                <%= vehicle.inv_model %>
+            </p>
+            <p><strong>Year:</strong>
+                <%= vehicle.inv_year %>
+            </p>
+            <p><strong>Price:</strong>
+                <%= vehicle.inv_price_formatted %>
+            </p>
+            <p><strong>Miles:</strong>
+                <%= vehicle.inv_miles_formatted %>
+            </p>
+            <p><strong>Color:</strong>
+                <%= vehicle.inv_color %>
+            </p>
+            <p><strong>Classification:</strong>
+                <%= vehicle.classification_name %>
+            </p>
+            <p><strong>Description:</strong>
+                <%= vehicle.inv_description %>
+            </p>
+        </div>
+    </div>
+</main>
