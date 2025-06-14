@@ -102,7 +102,7 @@ app.use(async (req, res, next) => {
  *************************/
 app.use(staticRoutes);
 app.use("/inv", inventoryRoute);
-app.use(accountRoute);
+app.use("/account", accountRoute);
 
 // Home Page
 app.get("/", baseController.buildHome);

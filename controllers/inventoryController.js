@@ -26,7 +26,6 @@ invCont.showVehicleDetail = async (req, res, next) => {
   const invId = req.params.invId;
   try {
     const vehicle = await invModel.getVehicleById(invId);
-    console.log(">> DB vehicle result: ", vehicle);
     if (!vehicle) {
       return res.status(404).render('errors/error', {
         title: '404 - Vehicle Not Found',
@@ -40,9 +39,6 @@ invCont.showVehicleDetail = async (req, res, next) => {
     vehicle.inv_price_formatted = formatter.format(vehicle.inv_price);
     vehicle.inv_miles_formatted = new Intl.NumberFormat('en-US').format(vehicle.inv_miles);
 
-    console.log(">> Formatted vehicle object: ", vehicle);
-    
-    // Render the EJS view with the vehicle object
     res.render("inventory/detail", {
       title: `${vehicle.inv_make} ${vehicle.inv_model}`,
       nav: await utilities.getNav(),
@@ -51,6 +47,113 @@ invCont.showVehicleDetail = async (req, res, next) => {
   } catch (error) {
     console.error("Error in showVehicleDetail: ", error);
     next(error);
+  }
+};
+
+/* ***************************
+ *  Inventory Management Controller
+ ************************** */
+invCont.buildManagement = async (req, res) => {
+  const nav = await utilities.getNav();
+  res.render("inventory/management", {
+    title: "Inventory Management",
+    nav,
+    message: req.flash("message"),
+  });
+};
+
+/* ***************************
+ *  Display Add Classification Form
+ ************************** */
+invCont.buildAddClassification = async (req, res) => {
+  const nav = await utilities.getNav();
+  res.render("inventory/add-classification", {
+    title: "Add Classification",
+    nav,
+    errors: null,
+  });
+};
+
+/* ***************************
+ *  Handle Add Classification Submission
+ ************************** */
+invCont.addClassification = async (req, res) => {
+  let { classification_name } = req.body;
+  classification_name = classification_name.trim();
+
+  const result = await invModel.addClassification(classification_name);
+
+  if (result) {
+    req.flash("message", "Classification added successfully.");
+    const nav = await utilities.getNav();
+    res.render("inventory/management", {
+      title: "Inventory Management",
+      nav,
+      message: req.flash("message"),
+    });
+  } else {
+    const nav = await utilities.getNav();
+    res.render("inventory/add-classification", {
+      title: "Add Classification",
+      nav,
+      errors: [{ msg: "Classification could not be added." }],
+    });
+  }
+};
+
+
+/* ***************************
+ * Add Inventory Item Controller
+ ************************** */
+invCont.addInventory = async (req, res) => {
+  let {
+    classification_id,
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_description,
+    inv_image = '/images/vehicles/no-image.png',
+    inv_thumbnail = '/images/vehicles/no-image.png',
+    inv_price,
+    inv_miles,
+    inv_color,
+  } = req.body;
+
+  const result = await invModel.addInventory({
+    classification_id,
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_miles,
+    inv_color,
+  });
+
+  if (result) {
+    req.flash("message", "Inventory item added.");
+    let nav = await utilities.getNav();
+    res.render("inventory/management", {
+      title: "Inventory Management",
+      nav,
+      message: req.flash("message"),
+    });
+  } else {
+    const classificationList = await utilities.buildClassificationList(classification_id);
+    res.render("inventory/add-inventory", {
+      title: "Add Inventory",
+      classificationList,
+      errors: [{ msg: "Failed to add inventory." }],
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_price,
+      inv_miles,
+      inv_color,
+    });
   }
 };
 

@@ -1,28 +1,24 @@
-const express = require("express")
-const router = express.Router()
-const utilities = require("../utilities")
-const accountController = require("../controllers/accountController")
-const regValidate = require('../utilities/account-validation')
+const express = require("express");
+const router = express.Router();
+const utilities = require("../utilities");
+const accountController = require("../controllers/accountController");
+const regValidate = require("../utilities/account-validation");
 
 // Show login view
-router.get("/login", utilities.handleErrors(accountController.buildLogin))
+router.get("/login", utilities.handleErrors(accountController.buildLogin));
 
 // Show registration view
-router.get("/register", utilities.handleErrors(accountController.buildRegister))
+router.get("/register", utilities.handleErrors(accountController.buildRegister));
 
-// Handle registration form submission
-router.post("/register", utilities.handleErrors(accountController.registerAccount))
-
+// POST route to process registration with validation middleware
+router.post(
+  "/register",
+  regValidate.registrationRules(),   // validation rules
+  regValidate.checkRegData,          // validation error handling
+  utilities.handleErrors(accountController.registerAccount) // controller handler
+);
 
 // Handle login form submission
-router.post('/register', utilities.handleErrors(accountController.registerAccount))
+router.post("/login", utilities.handleErrors(accountController.accountLogin));
 
-// Process the registration data
-router.post(
-    "/register",
-    regValidate.registrationRules(),
-    regValidate.checkRegData,
-    utilities.handleErrors(accountController.registerAccount)
-  )
-
-module.exports = router
+module.exports = router;

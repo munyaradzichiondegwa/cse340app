@@ -15,6 +15,8 @@ router.get('/detail/:invId', inventoryController.buildByInventoryId);
 
 router.get('/detail/:invId', inventoryController.showVehicleDetail);
 
+
+
 // New route for intentional error testing (to be added later)
 router.get('/throw-error', (req, res, next) => {
   // Throw an error to test error handling

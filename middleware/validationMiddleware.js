@@ -10,20 +10,17 @@ exports.validateClassification = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Pass errors back to the view
       return res.status(400).render('inventory/add-classification', {
         errors: errors.array(),
         message: null,
+        classification_name: req.body.classification_name, // for sticky form
+        nav: req.nav || null,
       });
     }
     next();
   },
 ];
 
-
-const { body, validationResult } = require('express-validator');
-
-// Server-side validation for inventory form
 exports.validateInventory = [
   body('classification_id')
     .notEmpty()
@@ -43,7 +40,7 @@ exports.validateInventory = [
   body('inv_year')
     .notEmpty()
     .withMessage('Year is required.')
-    .isInt({ min: 1886, max: new Date().getFullYear() + 1 }) // Cars invented ~1886
+    .isInt({ min: 1886, max: new Date().getFullYear() + 1 })
     .withMessage('Year must be a valid year.'),
   body('inv_description')
     .trim()
@@ -69,7 +66,7 @@ exports.validateInventory = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Save errors and input values, re-render with sticky inputs
+      // Attach errors to request for later handling in controller or middleware
       req.validationErrors = errors.array();
       return next();
     }
