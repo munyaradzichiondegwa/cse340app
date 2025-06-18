@@ -1,64 +1,62 @@
 const express = require('express');
 const router = express.Router();
 
-// Import the inventoryController
 const inventoryController = require('../controllers/inventoryController');
-
-// Import utility functions
 const utilities = require('../utilities/');
-
-// Import classification validation middleware
 const invValidate = require('../utilities/classification-validation');
-
-// Import inventory validation middleware (for add-inventory)
 const inventoryValidate = require('../utilities/inventory-validation');
 
-// Route to build inventory by classification ID
+// Inventory by classification (matches navigation URLs)
 router.get(
   '/type/:classificationId',
   utilities.handleErrors(inventoryController.buildByClassificationId)
 );
 
-// Route for vehicle detail
+// Vehicle detail
 router.get(
   '/detail/:invId',
   utilities.handleErrors(inventoryController.showVehicleDetail)
 );
 
-// Route to build management view
-router.get('/', utilities.handleErrors(inventoryController.buildManagement));
+// Inventory management main page
+router.get(
+  '/',
+  utilities.handleErrors(inventoryController.buildManagement)
+);
 
-// Route to build add inventory view
-router.get('/add', utilities.handleErrors(inventoryController.buildAddInventory));
-
-// Route to deliver add-classification form
+// Add classification form display
 router.get(
   '/add-classification',
   utilities.handleErrors(inventoryController.buildAddClassification)
 );
 
-// Route to handle classification form POST with validation
+// Add classification form submission
 router.post(
   '/add-classification',
-  invValidate.classificationValidationRules(),  // apply validation rules
-  invValidate.validateClassification,           // handle validation errors if any
+  invValidate.classificationValidationRules(),
+  invValidate.validateClassification,
   utilities.handleErrors(inventoryController.addClassification)
 );
 
-// *** Add Inventory Routes ***
 
-// GET add-inventory form
-router.get('/add-inventory', utilities.handleErrors(inventoryController.buildAddInventory));
+router.get('/detail/:invId', utilities.handleErrors(inventoryController.showVehicleDetail));
+router.get('/type/:classification_id', utilities.handleErrors(inventoryController.buildByClassificationId));
 
-// POST add-inventory form submission with validation
+// Add inventory form display
+router.get(
+  '/add-inventory',
+  utilities.handleErrors(inventoryController.buildAddInventory)
+);
+
+// Add inventory form submission
 router.post(
   '/add-inventory',
-  inventoryValidate.inventoryRules(),      // validation rules for inventory
-  inventoryValidate.checkInventoryData,    // error handler middleware
+  inventoryValidate.inventoryRules(),
+  inventoryValidate.checkInventoryData,
   utilities.handleErrors(inventoryController.addInventory)
 );
 
-// Route to trigger 500 error for testing
+// Test route to throw error
 router.get('/throw-error', (req, res, next) => {
   throw new Error('Intentional server error for testing');
 });

@@ -29,7 +29,7 @@ async function buildLogin(req, res, next) {
   }
 }
 
-
+module.exports = { buildLogin }
 /* ========================================
  * Deliver Registration View
  * Renders the registration page for the user.

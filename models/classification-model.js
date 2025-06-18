@@ -1,4 +1,4 @@
-const pool = require('../database'); // Adjust if your pool connection file is named differently
+const pool = require('../database'); // Adjust path as needed
 
 /**
  * Get all classifications sorted by name
@@ -10,6 +10,7 @@ async function getClassifications() {
     const result = await pool.query(sql);
     return result.rows;
   } catch (error) {
+    console.error('Error fetching classifications:', error);
     throw new Error('Error fetching classifications: ' + error.message);
   }
 }
@@ -25,6 +26,7 @@ async function addClassification(classification_name) {
     const result = await pool.query(sql, [classification_name]);
     return result.rowCount > 0;
   } catch (error) {
+    console.error('Error adding classification:', error);
     throw new Error('Error adding classification: ' + error.message);
   }
 }
@@ -40,6 +42,7 @@ async function getClassificationById(classification_id) {
     const result = await pool.query(sql, [classification_id]);
     return result.rows[0] || null;
   } catch (error) {
+    console.error('Error fetching classification by ID:', error);
     throw new Error('Error fetching classification by ID: ' + error.message);
   }
 }

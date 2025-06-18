@@ -1492,3 +1492,27 @@ input:required:valid {
   font-size: 1.2rem;
   font-weight: bold;
 }
+.vehicle-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.vehicle-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.vehicle-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+@media (max-width: 768px) {
+  .vehicle-detail {
+    flex-direction: column;
+  }
+}
+

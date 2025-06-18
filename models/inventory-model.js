@@ -1,10 +1,12 @@
-const pool = require("../database/");
+// models/inventory-model.js
+const pool = require('../database');
 
 /* Get all classifications */
 async function getClassifications() {
-  return await pool.query(
+  const result = await pool.query(
     "SELECT * FROM public.classification ORDER BY classification_name"
   );
+  return result.rows;
 }
 
 /* Get inventory by classification id */
@@ -25,20 +27,19 @@ async function getInventoryByClassificationId(classification_id) {
   }
 }
 
-/* Get inventory (vehicle) by inventory id */
+/* Get vehicle by inventory id */
 async function getVehicleById(inv_id) {
   try {
-    const data = await pool.query(
-      `SELECT i.*, c.classification_name 
-       FROM public.inventory AS i 
-       JOIN public.classification AS c 
-         ON i.classification_id = c.classification_id
-       WHERE i.inv_id = $1`,
-      [inv_id]
-    );
-    return data.rows[0];
+    const sql = `
+      SELECT i.*, c.classification_name
+      FROM public.inventory i
+      JOIN public.classification c ON i.classification_id = c.classification_id
+      WHERE i.inv_id = $1
+    `;
+    const result = await pool.query(sql, [inv_id]);
+    return result.rows[0] || null;
   } catch (error) {
-    console.error("getVehicleById error:", error);
+    console.error('getVehicleById error:', error);
     return null;
   }
 }
@@ -46,8 +47,9 @@ async function getVehicleById(inv_id) {
 /* Add new classification */
 async function addClassification(name) {
   try {
-    const sql = "INSERT INTO public.classification (classification_name) VALUES ($1)";
-    return await pool.query(sql, [name]);
+    const sql = "INSERT INTO public.classification (classification_name) VALUES ($1) RETURNING classification_id";
+    const result = await pool.query(sql, [name]);
+    return result.rows[0] || null;
   } catch (error) {
     console.error("addClassification error:", error);
     return null;
@@ -95,7 +97,7 @@ async function addInventory(item) {
 module.exports = {
   getClassifications,
   getInventoryByClassificationId,
-  getVehicleById,
+  getVehicleById,      // exported here
   addClassification,
   addInventory,
 };
