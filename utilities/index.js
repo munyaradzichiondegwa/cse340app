@@ -1,4 +1,9 @@
+// --- Required Dependencies ---
 const invModel = require("../models/inventory-model");
+// For creating and verifying JSON Web Tokens.
+const jwt = require("jsonwebtoken");
+// To load environment variables from a .env file.
+require("dotenv").config();
 
 const Util = {};
 
@@ -23,28 +28,6 @@ Util.getNav = async function () {
   });
   list += "</ul>";
   return list;
-};
-
-/* ****************************************
- * Builds a dynamic classification <select> dropdown
- **************************************** */
-Util.buildClassificationList = async function (selectedId = 0) {
-  try {
-    const data = await invModel.getClassifications();
-    let list = '<select name="classification_id" id="classificationList" required>';
-    list += '<option value="" disabled' + (!selectedId ? ' selected' : '') + '>Select Classification</option>';
-
-    data.rows.forEach(classification => {
-      const selected = classification.classification_id === Number(selectedId) ? ' selected' : '';
-      list += `<option value="${classification.classification_id}"${selected}>${classification.classification_name}</option>`;
-    });
-
-    list += '</select>';
-    return list;
-  } catch (error) {
-    console.error("Error building classification list:", error);
-    return '<select name="classification_id" id="classificationList" required><option value="">No classifications available</option></select>';
-  }
 };
 
 /* **************************************
@@ -79,70 +62,87 @@ Util.buildClassificationGrid = async function (data) {
 };
 
 /* ****************************************
- * Middleware For Handling Errors
- **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
-
-/* ****************************************
  * Build Vehicle Detail HTML
+ * This function creates the HTML for the vehicle detail view.
  **************************************** */
-Util.buildVehicleDetailHTML = function (data) {
-  if (!data) return '<p>Vehicle not found</p>';
-
-  const formatter = new Intl.NumberFormat('en-US', {
+Util.buildVehicleDetailHTML = function (vehicle) {
+  // Format price and mileage as required
+  const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 0
-  });
+  }).format(vehicle.inv_price);
 
-  return `
-    <div class="vehicle-detail">
-      <div class="vehicle-image">
-        <img src="${data.inv_image}" 
-             alt="${data.inv_year} ${data.inv_make} ${data.inv_model}">
+  const formattedMiles = new Intl.NumberFormat('en-US').format(vehicle.inv_miles);
+
+  // Build the HTML string
+  let html = `
+    <div class="detail-layout">
+      <div class="detail-image">
+        <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}">
       </div>
-      <div class="vehicle-info">
-        <h1>${data.inv_year} ${data.inv_make} ${data.inv_model}</h1>
-
-        <div class="price-section">
-          <span class="price-label">No-Haggle Price</span>
-          <div class="price">${formatter.format(data.inv_price)}</div>
+      <div class="detail-info">
+        <h2>${vehicle.inv_make} ${vehicle.inv_model} Details</h2>
+        <div class="detail-price">
+          <strong>Price:</strong> ${formattedPrice}
         </div>
-
-        <div class="specs-grid">
-          <div class="spec-item">
-            <span class="spec-label">Mileage:</span>
-            <span class="spec-value">${data.inv_miles.toLocaleString()} miles</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Color:</span>
-            <span class="spec-value">${data.inv_color}</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Classification:</span>
-            <span class="spec-value">${data.classification_name}</span>
-          </div>
-          <div class="spec-item">
-            <span class="spec-label">Stock #:</span>
-            <span class="spec-value">${data.inv_id}</span>
-          </div>
-        </div>
-
-        <div class="description">
-          <h3>Vehicle Description</h3>
-          <p>${data.inv_description}</p>
-        </div>
-
-        <div class="action-buttons">
-          <a href="#" class="btn btn-primary">START MY PURCHASE</a>
-          <a href="#" class="btn btn-secondary">ESTIMATE PAYMENTS</a>
-          <a href="#" class="btn btn-outline">CONTACT US</a>
-          <a href="#" class="btn btn-outline">SCHEDULE TEST DRIVE</a>
-          <a href="#" class="btn btn-outline">APPLY FOR FINANCING</a>
-        </div>
+        <p><strong>Year:</strong> ${vehicle.inv_year}</p>
+        <p><strong>Description:</strong> ${vehicle.inv_description}</p>
+        <p><strong>Color:</strong> ${vehicle.inv_color}</p>
+        <p><strong>Mileage:</strong> ${formattedMiles}</p>
       </div>
     </div>
   `;
+  return html;
 };
 
+/* ****************************************
+* Middleware For Handling Errors
+**************************************** */
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+/* ****************************************
+ * Middleware to check JWT token validity
+ * This function verifies if a JSON Web Token exists in the request cookies.
+ * On success, it populates res.locals with user data.
+ **************************************** */
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, accountData) {
+        if (err) {
+          req.flash("notice", "Please log in");
+          res.clearCookie("jwt");
+          return res.redirect("/account/login");
+        }
+        res.locals.accountData = accountData;
+        res.locals.loggedin = 1;
+        next();
+      }
+    );
+  } else {
+    next();
+  }
+};
+
+/* ****************************************
+ *  Check Login - Authorization Middleware
+ *  This function checks if a user is logged in before granting access to a route.
+ * ************************************ */
+// *** NEW FUNCTION ADDED HERE ***
+Util.checkLogin = (req, res, next) => {
+  // 1. Check the 'loggedin' flag in res.locals. This is set by the checkJWTToken middleware.
+  if (res.locals.loggedin) {
+    // 2. If the user is logged in, pass control to the next middleware or route handler.
+    next();
+  } else {
+    // 3. If the user is not logged in, create a flash message...
+    req.flash("notice", "Please log in.");
+    // 4. ...and redirect them to the login page.
+    return res.redirect("/account/login");
+  }
+};
+
+// --- Export Utility Functions ---
 module.exports = Util;

@@ -6,7 +6,7 @@ CREATE TYPE public.account_type AS ENUM
     ('Client', 'Employee', 'Admin');
 
 ALTER TYPE public.account_type
-    OWNER TO munyac_cse340;
+    OWNER TO munyab_cse340;
 
 
    --Table structure for table classification

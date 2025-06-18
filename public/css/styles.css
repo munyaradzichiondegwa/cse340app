@@ -1398,3 +1398,97 @@ input:required:valid {
   background-repeat: no-repeat;
 }
 
+/* --- Vehicle Detail View Styles --- */
+.detail-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Default: stacked single column */
+  gap: 1.5rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.detail-img img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-info h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.detail-price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #003366;
+}
+
+/* --- Responsive Layout for Detail View --- */
+@media (min-width: 768px) {
+  .detail-container {
+    grid-template-columns: 3fr 2fr; /* Side-by-side layout */
+  }
+}
+
+/* --- Inventory Classification Grid Styles --- */
+#inv-display {
+  margin: 1rem 0;
+  padding: 0;
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+#inv-display li {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#inv-display li a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#inv-display li img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+#inv-display .namePrice {
+  padding: 1rem;
+  text-align: center;
+  background-color: #f9f9f9;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#inv-display .namePrice hr {
+  display: none;
+}
+
+#inv-display .namePrice h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+#inv-display .namePrice span {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
