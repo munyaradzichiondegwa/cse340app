@@ -1,18 +1,17 @@
 
+</head>
 
 <body>
     <header>
         <h1>Inventory Management</h1>
     </header>
 
-    <!-- Flash message display -->
     <% if (message) { %>
         <div class="flash-message">
             <%= message %>
         </div>
         <% } %>
 
-            <!-- Main navigation -->
             <nav>
                 <ul>
                     <li><a href="/inv/add-classification">Add New Classification</a></li>
@@ -20,7 +19,21 @@
                 </ul>
             </nav>
 
-            <!-- Optional: main content area -->
             <main>
-                <!-- Add more content here if needed -->
+                <h2>Manage Inventory</h2>
+                <p>Select a classification from the list to see the items belonging to it.</p>
+
+                <!-- Injected classification select list -->
+                <div>
+                    <%- classificationSelect %>
+                </div>
+
+                <!-- Inventory display area -->
+                <table id="inventoryDisplay"></table>
+
+                <!-- Message if JS is disabled -->
+                <noscript>JavaScript must be enabled to use this page.</noscript>
             </main>
+
+            <!-- JS for handling inventory display -->
+            <script src="/js/inventory.js"></script>

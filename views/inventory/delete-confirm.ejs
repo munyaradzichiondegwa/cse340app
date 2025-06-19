@@ -1,0 +1,37 @@
+<main>
+    <h1>
+        <%= title %>
+    </h1>
+
+    <%- messages() %>
+
+        <% if (errors && errors.length> 0) { %>
+            <ul class="error-messages">
+                <% errors.forEach(error=> { %>
+                    <li>
+                        <%= error.msg %>
+                    </li>
+                    <% }) %>
+            </ul>
+            <% } %>
+
+                <p class="notice">Confirm Deletion - This is permanent and cannot be undone.</p>
+
+                <form class="management-form" action="/inv/delete" method="post">
+                    <label for="inv_make">Make</label>
+                    <input type="text" id="inv_make" name="inv_make" required value="<%= inv_make %>" readonly>
+
+                    <label for="inv_model">Model</label>
+                    <input type="text" id="inv_model" name="inv_model" required value="<%= inv_model %>" readonly>
+
+                    <label for="inv_year">Year</label>
+                    <input type="text" id="inv_year" name="inv_year" required value="<%= inv_year %>" readonly>
+
+                    <label for="inv_price">Price</label>
+                    <input type="text" id="inv_price" name="inv_price" required value="<%= inv_price %>" readonly>
+
+                    <button type="submit">Delete Item</button>
+
+                    <input type="hidden" name="inv_id" value="<%= inv_id %>">
+                </form>
+</main>

@@ -3,7 +3,7 @@
  ******************************************/
 
 const express = require("express");
-const expressLayouts = require("express-ejs-layouts");
+const expressLayouts = require("express-ejs-layouts"); // Ensure this is required
 require("dotenv").config();
 const session = require("express-session");
 const flash = require("connect-flash");
@@ -14,7 +14,7 @@ const pgSession = require("connect-pg-simple")(session);
 
 // --- Routes ---
 const staticRoutes = require("./routes/static");
-const inventoryRoute = require("./routes/inventory");
+const inventoryRoute = require("./routes/inventoryRoute");
 const accountRoute = require("./routes/accountRoute");
 
 // --- Controllers ---
@@ -35,15 +35,15 @@ const host = process.env.HOST || "localhost";
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(expressLayouts);
-app.set("layout", "./layouts/layout");
+app.use(expressLayouts); // This line is crucial and correctly placed
+app.set("layout", "./layouts/layout"); // This line sets the default layout file
 
-// Middleware
+// Middleware for parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Session & Flash Config
+// Session & Flash Configuration
 app.use(
   session({
     store: new pgSession({
@@ -58,13 +58,13 @@ app.use(
 );
 app.use(flash());
 
-// Express-messages setup
+// ** Express messages middleware (after flash) **
 app.use((req, res, next) => {
   res.locals.messages = require("express-messages")(req, res);
   next();
 });
 
-// Inject navigation bar into all views
+// ** Inject nav bar into all views (before routes) **
 app.use(async (req, res, next) => {
   try {
     res.locals.nav = await utilities.getNav();
@@ -74,21 +74,21 @@ app.use(async (req, res, next) => {
   }
 });
 
-// JWT middleware after session and cookie parsing
+// ** JWT Auth Middleware ** (Applies universally to check and attach JWT data to res.locals)
 app.use(utilities.checkJWTToken);
 
-// Route Definitions
+// Routes (after all middleware)
 app.use(staticRoutes);
 app.use("/inv", inventoryRoute);
 app.use("/account", accountRoute);
 app.get("/", baseController.buildHome);
 
-// 404 Handler
+// 404 Handler (must be after routes)
 app.use((req, res, next) => {
   next({ status: 404, message: "Sorry, we appear to have lost that page." });
 });
 
-// Global Error Handler
+// Global Error Handler (last middleware)
 app.use((err, req, res, next) => {
   console.error(`Error at "${req.originalUrl}": ${err.message}`);
   if (err.stack) {
@@ -97,15 +97,14 @@ app.use((err, req, res, next) => {
 
   const message = err.status === 404 ? err.message : "Oops! Something went wrong.";
 
-  // Use nav from res.locals if available to avoid extra DB call
   res.status(err.status || 500).render("errors/error", {
     title: err.status || "Server Error",
     message,
-    nav: res.locals.nav || '',
+    nav: res.locals.nav || "",
   });
 });
 
-// Start Server
+// Server Startup
 console.log("Environment:", process.env.NODE_ENV || "development");
 console.log(
   "DB URL:",

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const utilities = require('../utilities');
-const inventoryController = require("../controllers/inventoryController");
+const inventoryController = require("../controllers/invController");
 
 
 router.get("/custom", utilities.handleErrors(inventoryController.buildCustom));

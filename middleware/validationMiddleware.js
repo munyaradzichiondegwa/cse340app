@@ -1,68 +1,98 @@
 const { body, validationResult } = require('express-validator');
+const utilities = require('../utilities');
+const invModel = require('../models/inventory-model');
 
-exports.validateClassification = [
-  body('classification_name')
-    .trim()
-    .notEmpty().withMessage('Classification name is required.')
-    .bail()
-    .matches(/^[A-Za-z0-9]+$/).withMessage('Classification name must be alphanumeric with no spaces or special characters.'),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).render('inventory/add-classification', {
-        errors: errors.array(),
-        message: null,
-        classification_name: req.body.classification_name,
-        nav: req.nav || null,
-      });
-    }
-    next();
-  },
-];
+const invValidate = {};
 
-exports.validateInventory = [
-  body('classification_id')
-    .notEmpty().withMessage('Please select a classification.')
-    .bail()
-    .isInt().withMessage('Invalid classification selected.'),
-  body('inv_make')
-    .trim()
-    .notEmpty().withMessage('Make is required.')
-    .bail()
-    .isLength({ max: 30 }).withMessage('Make cannot exceed 30 characters.'),
-  body('inv_model')
-    .trim()
-    .notEmpty().withMessage('Model is required.')
-    .bail()
-    .isLength({ max: 30 }).withMessage('Model cannot exceed 30 characters.'),
-  body('inv_year')
-    .notEmpty().withMessage('Year is required.')
-    .bail()
-    .isInt({ min: 1886, max: new Date().getFullYear() + 1 }).withMessage('Year must be a valid year.'),
-  body('inv_description')
-    .trim()
-    .notEmpty().withMessage('Description is required.'),
-  body('inv_price')
-    .notEmpty().withMessage('Price is required.')
-    .bail()
-    .isFloat({ min: 0 }).withMessage('Price must be a positive number.')
-    .toFloat(),
-  body('inv_miles')
-    .notEmpty().withMessage('Mileage is required.')
-    .bail()
-    .isInt({ min: 0 }).withMessage('Mileage must be a positive number.')
-    .toInt(),
-  body('inv_color')
-    .trim()
-    .notEmpty().withMessage('Color is required.')
-    .bail()
-    .isLength({ max: 20 }).withMessage('Color cannot exceed 20 characters.'),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      req.validationErrors = errors.array();
-      return next();
-    }
-    next();
-  },
-];
+// Inventory validation rules
+invValidate.inventoryRules = () => {
+  return [
+    body('classification_id')
+      .isInt({ min: 1 })
+      .withMessage('Classification must be selected.'),
+    body('inv_make')
+      .trim()
+      .notEmpty()
+      .withMessage('Make is required.'),
+    body('inv_model')
+      .trim()
+      .notEmpty()
+      .withMessage('Model is required.'),
+    body('inv_year')
+      .isInt({ min: 1900, max: 2099 })
+      .withMessage('Enter a valid year between 1900 and 2099.'),
+    body('inv_description')
+      .trim()
+      .notEmpty()
+      .withMessage('Description is required.'),
+    body('inv_image')
+      .trim()
+      .notEmpty()
+      .withMessage('Image path is required.'),
+    body('inv_thumbnail')
+      .trim()
+      .notEmpty()
+      .withMessage('Thumbnail path is required.'),
+    body('inv_price')
+      .isFloat({ min: 0 })
+      .withMessage('Price must be a positive number.'),
+    body('inv_miles')
+      .isInt({ min: 0 })
+      .withMessage('Mileage must be a non-negative number.'),
+    body('inv_color')
+      .trim()
+      .notEmpty()
+      .withMessage('Color is required.')
+  ];
+};
+
+// Middleware to check and respond to add-inventory validation result
+invValidate.checkInventoryData = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const nav = await utilities.getNav();
+    const classificationList = await utilities.buildClassificationList(req.body.classification_id);
+    return res.render('inventory/add-inventory', {
+      title: 'Add New Inventory Item',
+      nav,
+      classificationList,
+      errors: errors.array(),
+      message: null,
+      ...req.body,
+    });
+  }
+  next();
+};
+
+/* **********************************
+ * Check data and return errors or continue to update
+ * **********************************/
+invValidate.checkUpdateData = async (req, res, next) => {
+  const { inv_id, inv_make, inv_model, inv_year, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, classification_id } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const nav = await utilities.getNav();
+    const classificationSelect = await utilities.buildClassificationList(classification_id);
+    const itemName = `${inv_make} ${inv_model}`;
+    return res.render('inventory/edit-inventory', {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect: classificationSelect,
+      errors: errors.array(),
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    });
+  }
+  next();
+};
+
+module.exports = invValidate;

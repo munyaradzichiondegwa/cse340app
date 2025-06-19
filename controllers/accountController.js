@@ -1,94 +1,87 @@
-// --- Required Dependencies ---
+const utilities = require("../utilities/");
+const accountModel = require("../models/account-model");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const bcrypt = require("bcryptjs");
 
-// --- Internal Modules ---
-const utilities = require("../utilities");
-const accountModel = require('../models/account-model');
+const accountController = {};
 
+/* ****************************************
+*  Deliver login view
+* *************************************** */
+accountController.buildLogin = async function (req, res, next) {
+  let nav = await utilities.getNav();
+  res.render("account/login", {
+    title: "Login",
+    nav,
+    errors: null,
+    messages: req.flash() // Ensure messages are passed
+  });
+};
 
-/* ========================================
- * Deliver Login View
- * Renders the login page for the user.
- *
- * >> THIS IS THE FUNCTION THAT WAS CAUSING THE ERROR <<
- * Ensure this function exists and the name is spelled correctly.
- * ===================================== */
-async function buildLogin(req, res, next) {
+/* ****************************************
+*  Deliver registration view
+* *************************************** */
+accountController.buildRegister = async function (req, res, next) {
+  let nav = await utilities.getNav();
+  res.render("account/register", {
+    title: "Register",
+    nav,
+    errors: null,
+    messages: req.flash() // Ensure messages are passed
+  });
+};
+
+/* ****************************************
+*  Process Registration
+* *************************************** */
+accountController.registerAccount = async function (req, res) {
+  let nav = await utilities.getNav();
+  const { account_firstname, account_lastname, account_email, account_password } = req.body;
+
   try {
-    const nav = await utilities.getNav();
-    res.render("account/login", {
-      title: "Login",
-      nav,
-      message: req.flash('notice') || null,
-      errors: null
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-module.exports = { buildLogin }
-/* ========================================
- * Deliver Registration View
- * Renders the registration page for the user.
- * ===================================== */
-async function buildRegister(req, res, next) {
-  try {
-    const nav = await utilities.getNav();
-    res.render("account/register", {
-      title: "Register",
-      nav,
-      errors: null,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-
-/* ========================================
- * Process Registration
- * Handles the submission of the registration form.
- * ===================================== */
-async function registerAccount(req, res, next) {
-  try {
-    const nav = await utilities.getNav();
-    const { account_firstname, account_lastname, account_email, account_password } = req.body;
+    const hashedPassword = await bcrypt.hash(account_password, 10);
 
     const regResult = await accountModel.registerAccount(
       account_firstname,
       account_lastname,
       account_email,
-      account_password
+      hashedPassword
     );
 
     if (regResult) {
       req.flash("notice", `Congratulations, you're registered ${account_firstname}. Please log in.`);
-      res.status(201).redirect('/account/login');
-    } else {
-      res.status(501).render("account/register", {
-        title: "Register",
+      res.status(201).render("account/login", {
+        title: "Login",
         nav,
-        message: "Sorry, the registration failed.",
         errors: null,
-        account_firstname,
-        account_lastname,
-        account_email
+        messages: req.flash() // Ensure messages are passed
+      });
+    } else {
+      req.flash("notice", "Sorry, the registration failed.");
+      res.status(501).render("account/register", {
+        title: "Registration",
+        nav,
+        errors: null,
+        messages: req.flash() // Ensure messages are passed
       });
     }
   } catch (error) {
-    next(error);
+    console.error("Registration Error:", error);
+    req.flash("notice", "Sorry, there was an error processing the registration.");
+    res.status(500).render("account/register", {
+      title: "Registration",
+      nav,
+      errors: null,
+      messages: req.flash() // Ensure messages are passed
+    });
   }
-}
+};
 
-
-/* ========================================
- * Process login request
- * Authenticates the user based on submitted credentials.
- * ===================================== */
-async function accountLogin(req, res, next) { // Note: Added 'next' for error handling
+/* ****************************************
+*  Process login request
+* *************************************** */
+accountController.accountLogin = async function (req, res) {
   let nav = await utilities.getNav();
   const { account_email, account_password } = req.body;
   const accountData = await accountModel.getAccountByEmail(account_email);
@@ -100,63 +93,150 @@ async function accountLogin(req, res, next) { // Note: Added 'next' for error ha
       nav,
       errors: null,
       account_email,
+      messages: req.flash() // Ensure messages are passed
     });
   }
 
   try {
-    if (await bcrypt.compare(account_password, accountData.account_password)) {
+    const match = await bcrypt.compare(account_password, accountData.account_password);
+    if (match) {
       delete accountData.account_password;
-      const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 });
-
-      if (process.env.NODE_ENV === 'development') {
-        res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 });
+      const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 }); // expiresIn in seconds
+      if(process.env.NODE_ENV === 'development') {
+        res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 }); // maxAge in milliseconds
       } else {
         res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 });
       }
-
       return res.redirect("/account/");
     } else {
-      req.flash("notice", "Please check your credentials and try again.");
-      res.status(400).render("account/login", {
+      req.flash("notice", "Please check your credentials and try again."); // Standardized flash key
+      return res.status(400).render("account/login", {
         title: "Login",
         nav,
         errors: null,
         account_email,
+        messages: req.flash() // Ensure messages are passed
       });
     }
   } catch (error) {
-    // Pass the error to the global error handler
-    return next(new Error('Access Forbidden'));
+    console.error("Login Error:", error);
+    req.flash("notice", "An unexpected error occurred. Please try again."); // More robust error message
+    res.redirect("/account/login"); // Redirect to login on unexpected error
   }
-}
-
-
-/* ========================================
- * Deliver Account Management View
- * Renders the main account view for a logged-in user.
- * ===================================== */
-async function buildAccountManagement(req, res, next) {
-  try {
-    const nav = await utilities.getNav();
-    res.render("account/accountManagement", {
-      title: "Account Management",
-      nav,
-      message: req.flash('notice') || null,
-      errors: null,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-
-// --- Export Controller Functions ---
-// All functions must be defined above this block.
-// The name used here must exactly match the function name defined above.
-module.exports = {
-  buildLogin, // << The ReferenceError pointed to this line.
-  buildRegister,
-  registerAccount,
-  accountLogin,
-  buildAccountManagement
 };
+
+/* ****************************************
+*  Deliver account management view
+* *************************************** */
+accountController.buildAccountManagement = async function (req, res, next) {
+  let nav = await utilities.getNav();
+  res.render("account/account-management", {
+    title: "Account Management",
+    nav,
+    errors: null,
+    messages: req.flash() // Ensure messages are passed
+  });
+};
+
+/* ****************************************
+*  Deliver account update view
+* *************************************** */
+accountController.buildUpdateAccountView = async function (req, res, next) {
+  const account_id = parseInt(req.params.accountId);
+  const nav = await utilities.getNav();
+  const accountData = await accountModel.getAccountById(account_id);
+
+  res.render("account/update-account", {
+    title: "Update Account Information",
+    nav,
+    errors: null,
+    messages: req.flash(), // Ensure messages are passed
+    account_id: accountData.account_id,
+    account_firstname: accountData.account_firstname,
+    account_lastname: accountData.account_lastname,
+    account_email: accountData.account_email,
+  });
+};
+
+/* ****************************************
+*  Process Account Information Update
+* *************************************** */
+accountController.updateAccountInfo = async function (req, res) {
+  const { account_id, account_firstname, account_lastname, account_email } = req.body;
+  const updateResult = await accountModel.updateAccountInfo(account_id, account_firstname, account_lastname, account_email);
+
+  if (updateResult) {
+    // Re-sign JWT with updated account data
+    const updatedAccountData = await accountModel.getAccountById(account_id);
+    const accessToken = jwt.sign(updatedAccountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 }); // expiresIn in seconds
+    if(process.env.NODE_ENV === 'development') {
+      res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 }); // maxAge in milliseconds
+    } else {
+      res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 });
+    }
+
+    req.flash("notice", "Your account information has been successfully updated.");
+    res.redirect("/account/");
+  } else {
+    const nav = await utilities.getNav();
+    req.flash("notice", "Sorry, the update failed.");
+    res.status(501).render("account/update-account", {
+      title: "Update Account Information",
+      nav,
+      errors: null,
+      messages: req.flash(), // Ensure messages are passed
+      account_id,
+      account_firstname,
+      account_lastname,
+      account_email,
+    });
+  }
+};
+
+/* ****************************************
+*  Process Password Change
+* *************************************** */
+accountController.updatePassword = async function (req, res) {
+  const { account_id, account_password } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(account_password, 10);
+    const updateResult = await accountModel.updatePassword(account_id, hashedPassword);
+
+    if (updateResult) {
+      req.flash("notice", "Your password has been successfully updated.");
+      res.redirect("/account/");
+    } else {
+      const nav = await utilities.getNav();
+      const accountData = await accountModel.getAccountById(account_id);
+      req.flash("notice", "Sorry, the password update failed.");
+      res.status(501).render("account/update-account", {
+        title: "Update Account Information",
+        nav,
+        errors: null,
+        messages: req.flash(), // Ensure messages are passed
+        account_id: accountData.account_id,
+        account_firstname: accountData.account_firstname,
+        account_lastname: accountData.account_lastname,
+        account_email: accountData.account_email,
+      });
+    }
+  } catch (error) {
+    console.error("Password Update Error:", error);
+    req.flash("notice", "An unexpected error occurred.");
+    res.redirect("/account/");
+  }
+};
+
+/* ****************************************
+ *  Process logout request
+ * ************************************ */
+accountController.logout = (req, res) => {
+  res.clearCookie("jwt"); // Clear the JWT cookie
+  req.session?.destroy(() => { // Destroy the session (if using sessions)
+    req.flash("notice", "You have been logged out.");
+    res.redirect("/");
+  });
+};
+
+module.exports = accountController;
