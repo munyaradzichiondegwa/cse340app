@@ -1,6 +1,7 @@
 const classificationModel = require("../models/classification-model");
 const invModel = require("../models/inventory-model");
 const utilities = require("../utilities");
+const reviewModel = require("../models/review-model"); // ADDED: For review functionality
 
 const NO_IMAGE = "/images/vehicles/no-image.png";
 const NO_THUMBNAIL = "/images/vehicles/no-image-tn.png";
@@ -51,6 +52,9 @@ inventoryController.showVehicleDetail = async (req, res, next) => {
             });
         }
 
+        // Fetch reviews for this inventory item
+        const reviews = await reviewModel.getReviewsByInvId(invId); // ADDED: Fetch reviews
+
         const vehicleHTML = utilities.buildVehicleDetailHTML(vehicle);
         const nav = await utilities.getNav();
 
@@ -58,6 +62,14 @@ inventoryController.showVehicleDetail = async (req, res, next) => {
             title: `${vehicle.inv_make} ${vehicle.inv_model}`,
             nav,
             grid: vehicleHTML,
+            reviews, // ADDED: Pass reviews to the view
+            errors: null, // Ensure errors is null initially
+            messages: req.flash(), // Pass flash messages
+            // Pass back submitted review data for stickiness if validation fails
+            review_rating: req.body.review_rating || null,
+            review_text: req.body.review_text || null,
+            // Pass accountData for review form (from checkJWTToken middleware)
+            accountData: res.locals.accountData || null, // ADDED: Pass accountData
         });
     } catch (error) {
         console.error("Error in showVehicleDetail:", error);
@@ -238,7 +250,6 @@ inventoryController.buildEditInventoryView = async function (req, res, next) {
     res.render("./inventory/edit-inventory", {
         title: "Edit " + itemName,
         nav,
-        classificationSelect: classificationList,
         errors: null,
         inv_id: itemData.inv_id,
         inv_make: itemData.inv_make,

@@ -1,4 +1,4 @@
-<% layout('layouts/layout') %>
+
 
     <h1>Account Management</h1>
 
@@ -27,6 +27,7 @@
                         </h2>
 
                         <p><a href="/account/update/<%= accountData.account_id %>">Update Account Information</a></p>
+                        <p><a href="/account/my-reviews">View My Reviews</a></p> <!-- ADDED: Link to My Reviews -->
 
                         <% if (accountData.account_type==='Employee' || accountData.account_type==='Admin' ) { %>
                             <h3>Inventory Management</h3>

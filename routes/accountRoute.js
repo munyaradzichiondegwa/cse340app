@@ -60,4 +60,11 @@ router.post(
   utilities.handleErrors(accountController.updatePassword)
 );
 
+// Route to view user's reviews (protected)
+router.get(
+  "/my-reviews", // New route path
+  utilities.checkLogin, // Ensure user is logged in
+  utilities.handleErrors(accountController.buildMyReviews)
+);
+
 module.exports = router;

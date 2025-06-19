@@ -16,7 +16,7 @@ const pgSession = require("connect-pg-simple")(session);
 const staticRoutes = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
 const accountRoute = require("./routes/accountRoute");
-
+const reviewRoute = require("./routes/reviewRoute"); 
 // --- Controllers ---
 const baseController = require("./controllers/baseController");
 
@@ -81,6 +81,7 @@ app.use(utilities.checkJWTToken);
 app.use(staticRoutes);
 app.use("/inv", inventoryRoute);
 app.use("/account", accountRoute);
+app.use("/review", reviewRoute);
 app.get("/", baseController.buildHome);
 
 // 404 Handler (must be after routes)

@@ -1,0 +1,53 @@
+<% layout('layouts/layout') %>
+
+    <h1>
+        <%= title %>
+    </h1>
+
+    <% if (messages && messages.notice) { %>
+        <div class="notice">
+            <% messages.notice.forEach(msg=> { %>
+                <%= msg %>
+                    <% }) %>
+        </div>
+        <% } %>
+
+            <% if (errors && errors.length> 0) { %>
+                <div class="notice">
+                    <ul class="error-list">
+                        <% errors.forEach(error=> { %>
+                            <li>
+                                <%= error.msg %>
+                            </li>
+                            <% }); %>
+                    </ul>
+                </div>
+                <% } %>
+
+                    <section class="my-reviews-list">
+                        <% if (myReviews && myReviews.length> 0) { %>
+                            <p>Here are all the reviews you have submitted:</p>
+                            <ul class="review-list">
+                                <% myReviews.forEach(review=> { %>
+                                    <li>
+                                        <h3>Review for: <a href="/inv/detail/<%= review.inv_id %>">
+                                                <%= review.inv_year %>
+                                                    <%= review.inv_make %>
+                                                        <%= review.inv_model %>
+                                            </a></h3>
+                                        <p><strong>Rating:</strong>
+                                            <%= review.review_rating %>/5
+                                        </p>
+                                        <p>"<%= review.review_text %>"</p>
+                                        <p class="review-date">Submitted on: <%= new
+                                                Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric' ,
+                                                month: 'long' , day: 'numeric' }) %>
+                                        </p>
+                                        <!-- Optional: Add edit/delete buttons here -->
+                                    </li>
+                                    <% }); %>
+                            </ul>
+                            <% } else { %>
+                                <p>You haven't submitted any reviews yet.</p>
+                                <% } %>
+                    </section>

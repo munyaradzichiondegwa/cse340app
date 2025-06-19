@@ -3,6 +3,7 @@ const accountModel = require("../models/account-model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const reviewModel = require("../models/review-model"); // ADDED: For review functionality
 
 const accountController = {};
 
@@ -225,6 +226,27 @@ accountController.updatePassword = async function (req, res) {
     console.error("Password Update Error:", error);
     req.flash("notice", "An unexpected error occurred.");
     res.redirect("/account/");
+  }
+};
+
+/* ****************************************
+ *  Deliver My Reviews view
+ * *************************************** */
+accountController.buildMyReviews = async function (req, res, next) {
+  try {
+    const account_id = res.locals.accountData.account_id; // Get account_id from res.locals
+    const myReviews = await reviewModel.getReviewsByAccountId(account_id); // Fetch reviews for this user
+    const nav = await utilities.getNav();
+
+    res.render("account/my-reviews", { // New EJS file
+      title: "My Reviews",
+      nav,
+      myReviews, // Pass reviews to the view
+      errors: null,
+      messages: req.flash(),
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
