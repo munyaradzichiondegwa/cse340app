@@ -1,7 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const reviewController = require("../controllers/reviewController");
-const utilities = require("../utilities/"); // For handleErrors and checkLogin
+const utilities = require("../utilities"); // For handleErrors and checkLogin
 const reviewValidate = require("../utilities/review-validation"); // For review validation
 
 // Route to process new review submission

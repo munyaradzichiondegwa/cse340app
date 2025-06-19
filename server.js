@@ -81,7 +81,7 @@ app.use(utilities.checkJWTToken);
 app.use(staticRoutes);
 app.use("/inv", inventoryRoute);
 app.use("/account", accountRoute);
-app.use("/review", reviewRoute);
+app.use("/reviews", reviewRoute);
 app.get("/", baseController.buildHome);
 
 // 404 Handler (must be after routes)
